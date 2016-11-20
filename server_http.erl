@@ -11,9 +11,19 @@ start() ->
                                         , {active, true}
                                         ]),
     io:format("SERVER Listening on port 2345\n"),
-    {ok, Socket} = gen_tcp:accept(Listen),
-    gen_tcp:close(Listen),
-    loop(Socket).
+    acceptLoop(Listen),
+    gen_tcp:close(Listen).
+
+
+acceptLoop(ListenSocket) ->
+    case gen_tcp:accept(ListenSocket) of
+        {ok, Socket} ->
+	     loop(Socket),
+	     acceptLoop(ListenSocket);
+	_Other ->
+	     ok
+    end.
+
 
 loop(Socket) ->
     receive
